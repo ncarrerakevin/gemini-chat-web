@@ -50,7 +50,7 @@ vercel
 3. Agrega las siguientes variables:
 
 ```
-GEMINI_API_KEY=AIzaSyC3dZUBCne6YPLpwv775RTchJ9bdvgdmIM
+GEMINI_API_KEY=your_api_key_here
 GEMINI_FLASH_MODEL=gemini-2.5-flash
 ```
 
