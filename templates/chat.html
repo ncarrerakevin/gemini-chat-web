@@ -1,0 +1,2060 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>* Sans.</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Press Start 2P', 'Courier New', monospace;
+            background: #000000;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .main-wrapper {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            max-width: 1400px;
+            width: 100%;
+        }
+
+        .character-box {
+            width: 250px;
+            background: #000000;
+            border: 4px solid #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            position: relative;
+            gap: 20px;
+        }
+
+        /* Panel de control */
+        .control-panel {
+            width: 100%;
+            background: #000000;
+            border: 3px solid #00FFFF;
+            padding: 15px;
+            font-size: 9px;
+        }
+
+        .control-panel h4 {
+            color: #00FFFF;
+            font-size: 10px;
+            margin: 0 0 10px 0;
+            text-align: center;
+            border-bottom: 2px solid #00FFFF;
+            padding-bottom: 5px;
+        }
+
+        .control-group {
+            margin-bottom: 12px;
+        }
+
+        .control-label {
+            color: #FFFFFF;
+            font-size: 8px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .control-label .value {
+            color: #00FFFF;
+            font-weight: bold;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #1a1a1a;
+            outline: none;
+            border: 2px solid #00FFFF;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #00FFFF;
+            cursor: pointer;
+            border: 2px solid #FFFFFF;
+            box-shadow: 0 0 8px #00FFFF;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #00FFFF;
+            cursor: pointer;
+            border: 2px solid #FFFFFF;
+            box-shadow: 0 0 8px #00FFFF;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .ctrl-button {
+            padding: 6px;
+            background: #000000;
+            color: #00FFFF;
+            border: 2px solid #00FFFF;
+            font-size: 8px;
+            font-family: 'Press Start 2P', monospace;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .ctrl-button:hover {
+            background: #00FFFF;
+            color: #000000;
+            box-shadow: 0 0 10px #00FFFF;
+        }
+
+        .ctrl-button:active {
+            transform: scale(0.95);
+        }
+
+        .color-preview {
+            width: 100%;
+            height: 30px;
+            border: 2px solid #FFFFFF;
+            margin-top: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .mini-emotions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            margin-top: 8px;
+            font-size: 7px;
+        }
+
+        .mini-emotion {
+            display: flex;
+            justify-content: space-between;
+            color: #888;
+        }
+
+        .mini-emotion .name {
+            color: #888;
+        }
+
+        .mini-emotion .val {
+            color: #00FFFF;
+        }
+
+        /* Panel de emociones */
+        .emotion-panel {
+            width: 240px;
+            background: #000000;
+            border: 4px solid #FFFFFF;
+            padding: 15px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .emotion-panel h3 {
+            color: #FFFFFF;
+            font-size: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 2px solid #FFFFFF;
+            padding-bottom: 8px;
+        }
+
+        .emotion-panel h4 {
+            color: #FFFF00;
+            font-size: 9px;
+            margin: 15px 0 8px 0;
+            text-align: center;
+            border-bottom: 1px solid #FFFF00;
+            padding-bottom: 4px;
+        }
+
+        /* Dimensiones fundamentales (barras bipolares) */
+        .dimension-item {
+            margin-bottom: 16px;
+        }
+
+        .dimension-label {
+            color: #00FFFF;
+            font-size: 10px;
+            margin-bottom: 4px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .dimension-bar-container {
+            width: 100%;
+            height: 20px;
+            background: #1a1a1a;
+            border: 2px solid #00FFFF;
+            position: relative;
+            display: flex;
+        }
+
+        .dimension-bar-container::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: #FFFFFF;
+            z-index: 1;
+        }
+
+        .dimension-bar-fill {
+            position: absolute;
+            height: 100%;
+            background: #00FFFF;
+            transition: left 0.3s ease, width 0.3s ease;
+            box-shadow: 0 0 10px #00FFFF;
+        }
+
+        .dimension-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 7px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .dimension-value {
+            text-align: center;
+            color: #00FFFF;
+            font-size: 9px;
+            margin-top: 2px;
+        }
+
+        /* Círculo circumplejo */
+        .circumplex-container {
+            width: 140px;
+            height: 140px;
+            margin: 10px auto;
+            position: relative;
+        }
+
+        .circumplex-circle {
+            width: 100%;
+            height: 100%;
+            border: 3px solid #FFFFFF;
+            border-radius: 50%;
+            position: relative;
+            background: radial-gradient(circle, #1a1a1a 0%, #000000 100%);
+        }
+
+        .circumplex-axes {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+        }
+
+        .circumplex-axes::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 5%;
+            bottom: 5%;
+            width: 1px;
+            background: #444;
+            transform: translateX(-50%);
+        }
+
+        .circumplex-axes::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            right: 5%;
+            height: 1px;
+            background: #444;
+            transform: translateY(-50%);
+        }
+
+        .circumplex-point {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #00FFFF;
+            border: 2px solid #FFFFFF;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: left 0.2s ease, top 0.2s ease;
+            box-shadow: 0 0 15px #00FFFF;
+            z-index: 10;
+        }
+
+        .circumplex-point.impulse {
+            animation: impulseFlash 0.5s ease-out;
+        }
+
+        @keyframes impulseFlash {
+            0% {
+                box-shadow: 0 0 15px #00FFFF;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                box-shadow: 0 0 30px #FFFF00, 0 0 50px #FFFF00;
+                transform: translate(-50%, -50%) scale(1.5);
+            }
+            100% {
+                box-shadow: 0 0 15px #00FFFF;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .trigger-indicator {
+            font-size: 7px;
+            color: #FFFF00;
+            text-align: center;
+            margin-top: 8px;
+            height: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .trigger-indicator.active {
+            opacity: 1;
+        }
+
+        .circumplex-labels {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            font-size: 7px;
+            color: #888;
+        }
+
+        .circumplex-labels span {
+            position: absolute;
+        }
+
+        .circumplex-labels .top { top: 0; left: 50%; transform: translateX(-50%); }
+        .circumplex-labels .bottom { bottom: 0; left: 50%; transform: translateX(-50%); }
+        .circumplex-labels .left { left: 0; top: 50%; transform: translateY(-50%); }
+        .circumplex-labels .right { right: 0; top: 50%; transform: translateY(-50%); }
+
+        /* Emociones derivadas */
+        .emotion-item {
+            margin-bottom: 10px;
+        }
+
+        .emotion-label {
+            color: #FFFFFF;
+            font-size: 8px;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            opacity: 0.8;
+        }
+
+        .emotion-bar-bg {
+            width: 100%;
+            height: 10px;
+            background: #1a1a1a;
+            border: 2px solid #666;
+            position: relative;
+        }
+
+        .emotion-bar-fill {
+            height: 100%;
+            transition: width 0.5s ease, background-color 0.5s ease;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        /* Blob gelatinoso */
+        .blob-container {
+            width: 150px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Esfera 3D de agua */
+        .blob {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+            transform-style: preserve-3d;
+            transition: background 1s ease;
+            box-shadow:
+                inset -25px -25px 40px rgba(0, 0, 0, 0.5),
+                inset 10px 10px 20px rgba(255, 255, 255, 0.1),
+                0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .blob::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 20%;
+            width: 40%;
+            height: 40%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%,
+                rgba(255, 255, 255, 0.6),
+                rgba(255, 255, 255, 0.2) 40%,
+                transparent 70%);
+            filter: blur(2px);
+            z-index: 2;
+        }
+
+        /* Capas de agua rotando */
+        .water-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            opacity: 0.3;
+            background: radial-gradient(circle at 60% 40%,
+                rgba(255, 255, 255, 0.4),
+                transparent 50%);
+        }
+
+        .water-layer:nth-child(1) {
+            animation: rotateWater1 8s linear infinite;
+        }
+
+        .water-layer:nth-child(2) {
+            animation: rotateWater2 12s linear infinite reverse;
+            opacity: 0.2;
+        }
+
+        .water-layer:nth-child(3) {
+            animation: rotateWater3 10s linear infinite;
+            opacity: 0.25;
+        }
+
+        @keyframes rotateWater1 {
+            0% { transform: rotate(0deg) translateX(10px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(10px) rotate(-360deg); }
+        }
+
+        @keyframes rotateWater2 {
+            0% { transform: rotate(0deg) translateY(8px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateY(8px) rotate(-360deg); }
+        }
+
+        @keyframes rotateWater3 {
+            0% { transform: rotate(0deg) translate(6px, 6px) rotate(0deg); }
+            100% { transform: rotate(360deg) translate(6px, 6px) rotate(-360deg); }
+        }
+
+        .blob:hover {
+            transform: scale(1.08);
+        }
+
+        .blob.clicked {
+            animation: blobRecoil 0.3s ease-out;
+        }
+
+        @keyframes blobRecoil {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(0.85) rotate(5deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .blob.talking {
+            animation: blobTalk 0.15s ease-in-out;
+        }
+
+        @keyframes blobTalk {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.08) translateY(-4px);
+            }
+        }
+
+        /* Cabeza del robot */
+        .robot-head {
+            position: absolute;
+            width: 70px;
+            height: 50px;
+            background: linear-gradient(135deg, #4A4A4A 0%, #2A2A2A 100%);
+            left: 25px;
+            top: 20px;
+            border: 2px solid #00FFFF;
+            box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        /* Antenas */
+        .robot-antenna {
+            position: absolute;
+            width: 3px;
+            height: 12px;
+            background: #00FFFF;
+            top: 8px;
+        }
+
+        .robot-antenna.left {
+            left: 32px;
+        }
+
+        .robot-antenna.right {
+            right: 32px;
+        }
+
+        .robot-antenna::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #00FFFF;
+            border-radius: 50%;
+            top: -6px;
+            left: -1.5px;
+            animation: antennaGlow 1.5s infinite;
+        }
+
+        @keyframes antennaGlow {
+            0%, 100% { opacity: 0.5; box-shadow: 0 0 5px #00FFFF; }
+            50% { opacity: 1; box-shadow: 0 0 15px #00FFFF; }
+        }
+
+        /* Visor brillante */
+        .robot-visor {
+            position: absolute;
+            width: 60px;
+            height: 16px;
+            background: linear-gradient(90deg, #FF0000, #FF00FF, #00FFFF, #00FF00);
+            background-size: 200% 100%;
+            animation: visorScan 3s linear infinite;
+            left: 30px;
+            top: 32px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+
+        @keyframes visorScan {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+
+        /* Cuello/cuerpo superior */
+        .robot-neck {
+            position: absolute;
+            width: 40px;
+            height: 15px;
+            background: #3A3A3A;
+            left: 40px;
+            top: 70px;
+            border: 2px solid #00FFFF;
+        }
+
+        /* Indicador de voz (se mueve al hablar) */
+        .robot-voice-indicator {
+            position: absolute;
+            width: 50px;
+            height: 8px;
+            background: transparent;
+            left: 35px;
+            bottom: 30px;
+            display: flex;
+            gap: 3px;
+            justify-content: center;
+        }
+
+        .voice-bar {
+            width: 4px;
+            height: 8px;
+            background: #00FF00;
+            transition: height 0.08s, background 0.08s;
+        }
+
+        .voice-bar.active {
+            height: 14px;
+            background: #00FFFF;
+            box-shadow: 0 0 8px #00FFFF;
+        }
+
+        /* Detalles tecnológicos */
+        .robot-detail {
+            position: absolute;
+            width: 8px;
+            height: 2px;
+            background: #00FFFF;
+        }
+
+        .robot-detail.top-left {
+            left: 28px;
+            top: 24px;
+        }
+
+        .robot-detail.top-right {
+            right: 28px;
+            top: 24px;
+        }
+
+        .container {
+            width: 700px;
+            height: 90vh;
+            background: #000000;
+            border: 4px solid #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .header {
+            background: #000000;
+            color: #FFFFFF;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 4px solid #FFFFFF;
+        }
+
+        .header h1 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.3);
+        }
+
+        .header p {
+            font-size: 8px;
+            opacity: 0.7;
+        }
+
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #000000;
+        }
+
+        .chat-area::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .chat-area::-webkit-scrollbar-track {
+            background: #000000;
+        }
+
+        .chat-area::-webkit-scrollbar-thumb {
+            background: #FFFFFF;
+            border: 2px solid #000000;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .message.user {
+            text-align: right;
+        }
+
+        .message-content {
+            display: inline-block;
+            padding: 15px;
+            border: 3px solid #FFFFFF;
+            max-width: 80%;
+            word-wrap: break-word;
+            background: #000000;
+            color: #FFFFFF;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        .message-content em {
+            font-style: italic;
+            color: #FFFF00;
+        }
+
+        .message-content strong {
+            font-weight: bold;
+            color: #FFFFFF;
+        }
+
+        .user .message-content {
+            border-color: #FFFF00;
+            color: #FFFF00;
+        }
+
+        .gemini .message-content {
+            border-color: #FFFFFF;
+            color: #FFFFFF;
+        }
+
+        .message-label {
+            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #FFFFFF;
+        }
+
+        .user .message-label {
+            color: #FFFF00;
+        }
+
+        .gemini .message-label {
+            color: #FFFFFF;
+        }
+
+        .input-area {
+            padding: 20px;
+            background: #000000;
+            border-top: 4px solid #FFFFFF;
+            display: flex;
+            gap: 10px;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 12px 16px;
+            border: 3px solid #FFFFFF;
+            background: #000000;
+            color: #FFFFFF;
+            font-size: 12px;
+            outline: none;
+            font-family: 'Press Start 2P', monospace;
+        }
+
+        #messageInput:focus {
+            border-color: #FFFF00;
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.5);
+        }
+
+        #messageInput::placeholder {
+            color: #666666;
+        }
+
+        button {
+            padding: 12px 20px;
+            background: #FFFFFF;
+            color: #000000;
+            border: 3px solid #FFFFFF;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Press Start 2P', monospace;
+            transition: all 0.1s;
+        }
+
+        button:hover {
+            background: #000000;
+            color: #FFFFFF;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .error {
+            background: #000000 !important;
+            border-color: #FF0000 !important;
+            color: #FF0000 !important;
+        }
+
+        #streamingContent::after {
+            content: '▊';
+            animation: blink 0.7s infinite;
+            margin-left: 4px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Efecto de escaneo CRT */
+        .container::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .audio-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background: #FF0000;
+            color: #FFFFFF;
+            border: 3px solid #FFFFFF;
+            font-size: 10px;
+            animation: pulse 2s infinite;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .audio-indicator.enabled {
+            background: #00FF00;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <!-- Esfera 3D de Agua -->
+        <div class="character-box">
+            <div class="blob-container">
+                <div class="blob" id="blobCharacter">
+                    <div class="water-layer"></div>
+                    <div class="water-layer"></div>
+                    <div class="water-layer"></div>
+                </div>
+            </div>
+
+            <!-- Panel de Control -->
+            <div class="control-panel">
+                <h4>⚙ CONTROLES</h4>
+
+                <!-- Slider Valencia -->
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>VALENCIA</span>
+                        <span class="value" id="valenceDisplay">+0.00</span>
+                    </div>
+                    <input type="range" min="-100" max="100" value="0" class="slider" id="valenceSlider">
+                </div>
+
+                <!-- Slider Activación -->
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>ACTIVACIÓN</span>
+                        <span class="value" id="arousalDisplay">+0.00</span>
+                    </div>
+                    <input type="range" min="-100" max="100" value="0" class="slider" id="arousalSlider">
+                </div>
+
+                <!-- Slider Molestia (Directo) -->
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>MOLESTIA</span>
+                        <span class="value" id="angerDisplay">0</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="0" class="slider" id="angerSlider" style="border-color: #FF4500;">
+                </div>
+
+                <!-- Preview de Color -->
+                <div class="color-preview" id="colorPreview"></div>
+
+                <!-- Botones de Presets -->
+                <div class="button-group">
+                    <button class="ctrl-button" onclick="setPreset('neutral')">NEUTRAL</button>
+                    <button class="ctrl-button" onclick="setPreset('happy')">FELIZ</button>
+                    <button class="ctrl-button" onclick="setPreset('sad')">TRISTE</button>
+                    <button class="ctrl-button" onclick="setPreset('angry')">MOLESTO</button>
+                </div>
+
+                <!-- Mini display de emociones -->
+                <div class="mini-emotions">
+                    <div class="mini-emotion">
+                        <span class="name">Felicidad:</span>
+                        <span class="val" id="miniHappiness">0</span>
+                    </div>
+                    <div class="mini-emotion">
+                        <span class="name">Tristeza:</span>
+                        <span class="val" id="miniSadness">0</span>
+                    </div>
+                    <div class="mini-emotion">
+                        <span class="name">Molestia:</span>
+                        <span class="val" id="miniAnger">0</span>
+                    </div>
+                    <div class="mini-emotion">
+                        <span class="name">Calma:</span>
+                        <span class="val" id="miniCalm">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat -->
+        <div class="container">
+            <div class="header">
+                <h1>🤖 Chat con Sans</h1>
+                <p>eh... powered by {{ model_name }}</p>
+            </div>
+
+        <div class="chat-area" id="chatArea">
+            <div class="message gemini">
+                <div class="message-label">* Sans</div>
+                <div class="message-content">
+                    eh, que hay compadre. soy sans. sans el esqueleto. <em style="color: #FFFF00;">*guiño*</em> jeje.
+                </div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input
+                type="text"
+                id="messageInput"
+                placeholder="* Di algo..."
+                autocomplete="off"
+            >
+            <button id="sendButton" onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
+
+    <!-- Panel de Emociones -->
+    <div class="emotion-panel">
+        <h3>MODELO CIRCUMPLEJO</h3>
+
+        <!-- Dimensiones Fundamentales -->
+        <h4>DIMENSIONES</h4>
+
+        <div class="dimension-item">
+            <div class="dimension-label">VALENCIA</div>
+            <div class="dimension-bar-container">
+                <div class="dimension-bar-fill" id="valenceBar"></div>
+            </div>
+            <div class="dimension-labels">
+                <span>Negativo</span>
+                <span>Positivo</span>
+            </div>
+            <div class="dimension-value" id="valenceValue">+20</div>
+        </div>
+
+        <div class="dimension-item">
+            <div class="dimension-label">ACTIVACIÓN</div>
+            <div class="dimension-bar-container">
+                <div class="dimension-bar-fill" id="arousalBar"></div>
+            </div>
+            <div class="dimension-labels">
+                <span>Bajo</span>
+                <span>Alto</span>
+            </div>
+            <div class="dimension-value" id="arousalValue">+10</div>
+        </div>
+
+        <!-- Círculo Circumplejo -->
+        <div class="circumplex-container">
+            <div class="circumplex-circle">
+                <div class="circumplex-axes"></div>
+                <div class="circumplex-labels">
+                    <span class="top">ALTO</span>
+                    <span class="bottom">BAJO</span>
+                    <span class="left">NEG</span>
+                    <span class="right">POS</span>
+                </div>
+                <div class="circumplex-point" id="circumplexPoint"></div>
+            </div>
+            <div class="trigger-indicator" id="triggerIndicator"></div>
+        </div>
+
+        <!-- Emociones Derivadas -->
+        <h4>EMOCIONES DERIVADAS</h4>
+
+        <div class="emotion-item">
+            <div class="emotion-label">
+                <span>Felicidad</span>
+                <span id="happinessValue">0</span>
+            </div>
+            <div class="emotion-bar-bg">
+                <div class="emotion-bar-fill" id="happinessBar" style="width: 0%; background-color: #FFD700;"></div>
+            </div>
+        </div>
+        <div class="emotion-item">
+            <div class="emotion-label">
+                <span>Tristeza</span>
+                <span id="sadnessValue">0</span>
+            </div>
+            <div class="emotion-bar-bg">
+                <div class="emotion-bar-fill" id="sadnessBar" style="width: 0%; background-color: #4169E1;"></div>
+            </div>
+        </div>
+        <div class="emotion-item">
+            <div class="emotion-label">
+                <span>Molestia</span>
+                <span id="angerValue">0</span>
+            </div>
+            <div class="emotion-bar-bg">
+                <div class="emotion-bar-fill" id="angerBar" style="width: 0%; background-color: #FF4500;"></div>
+            </div>
+        </div>
+        <div class="emotion-item">
+            <div class="emotion-label">
+                <span>Calma</span>
+                <span id="calmValue">0</span>
+            </div>
+            <div class="emotion-bar-bg">
+                <div class="emotion-bar-fill" id="calmBar" style="width: 0%; background-color: #98FB98;"></div>
+            </div>
+        </div>
+        <div class="emotion-item">
+            <div class="emotion-label">
+                <span>Energía</span>
+                <span id="energyValue">0</span>
+            </div>
+            <div class="emotion-bar-bg">
+                <div class="emotion-bar-fill" id="energyBar" style="width: 0%; background-color: #FF69B4;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Indicador de audio -->
+    <div class="audio-indicator" id="audioIndicator">🔇 Click para activar audio</div>
+
+    <script>
+        const chatArea = document.getElementById('chatArea');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const sessionId = 'session_' + Date.now();
+        const blobCharacter = document.getElementById('blobCharacter');
+        const audioIndicator = document.getElementById('audioIndicator');
+
+        // Crear contexto de audio para el sonido de Sans
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let isAudioEnabled = false;
+
+        // ============================================================================
+        // CAJA NEGRA: SISTEMA EMOCIONAL BASADO EN MODELO CIRCUMPLEJO DE RUSSELL
+        // ============================================================================
+
+        // Dimensiones fundamentales del modelo psicológico
+        // - Valencia (valence): eje horizontal, -1 (negativo) a +1 (positivo)
+        // - Activación (arousal): eje vertical, -1 (bajo) a +1 (alto)
+
+        let valence = 0.0;      // Estado emocional positivo/negativo
+        let arousal = 0.0;      // Estado de activación/energía
+        let valenceVelocity = 0;
+        let arousalVelocity = 0;
+
+        // Constantes del sistema emocional
+        const EMOTION_DECAY_RATE = 0.08;    // Tasa de retorno al equilibrio
+        const EMOTION_DAMPING = 0.90;       // Amortiguamiento
+        const EMOTION_COUPLING = 0.05;      // Acoplamiento entre dimensiones
+        const EMOTION_NOISE = 0.002;        // Ruido estocástico
+
+        // Emociones derivadas (calculadas automáticamente)
+        let emotions = {
+            happiness: 0,   // Alta valencia + Alta activación
+            sadness: 0,     // Baja valencia + Baja activación
+            anger: 0,       // Baja valencia + Alta activación
+            calm: 0,        // Alta valencia + Baja activación
+            energy: 0       // Neutral valencia + Alta activación
+        };
+
+        // ============================================================================
+        // SISTEMA DE MORFOLOGÍA: OSCILADORES ARMÓNICOS ACOPLADOS (GELATINA)
+        // ============================================================================
+
+        // Número de puntos en el perímetro del blob (osciladores)
+        const NUM_OSCILLATORS = 32;  // Más puntos = forma más suave
+
+        // Estado de cada oscilador (radio desde el centro)
+        let oscillatorRadii = [];      // Radio actual de cada punto
+        let oscillatorVelocities = []; // Velocidad de cada radio
+
+        // Radio base y constantes del sistema de osciladores
+        const BASE_RADIUS = 45;  // Radio base en %
+
+        // Inicializar osciladores con pequeña perturbación
+        for (let i = 0; i < NUM_OSCILLATORS; i++) {
+            oscillatorRadii[i] = BASE_RADIUS + (Math.random() - 0.5) * 2;
+            oscillatorVelocities[i] = (Math.random() - 0.5) * 0.5;
+        }
+
+        // Variable para respiración global
+        let breathPhase = 0;
+
+        // Función para crear el sonido IDÉNTICO de Sans de Undertale
+        function playTalkSound() {
+            if (!isAudioEnabled) return;
+
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            // Frecuencia más aguda para el sonido
+            oscillator.frequency.value = 200 + Math.random() * 50;
+            oscillator.type = 'square';
+
+            // Volumen más bajo y duración más corta como en el juego
+            gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.035);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.035);
+        }
+
+        // Animar el blob al hablar
+        function animateVoice() {
+            blobCharacter.classList.add('talking');
+            setTimeout(() => {
+                blobCharacter.classList.remove('talking');
+            }, 150);
+        }
+
+        // Sistema de color basado en espectros del modelo circumplejo
+        // Definir colores base para cada cuadrante (RGB)
+        const COLOR_QUADRANTS = {
+            // Cuadrante I: Valencia+ Activación+ → Amarillo/Naranja (Felicidad, Excitación)
+            Q1: { r: 255, g: 200, b: 50 },   // Amarillo-naranja
+
+            // Cuadrante II: Valencia- Activación+ → Rojo (Molestia, Ira)
+            Q2: { r: 255, g: 30, b: 30 },    // Rojo intenso
+
+            // Cuadrante III: Valencia- Activación- → Azul (Tristeza, Depresión)
+            Q3: { r: 50, g: 80, b: 200 },    // Azul
+
+            // Cuadrante IV: Valencia+ Activación- → Verde/Cyan (Calma, Relajación)
+            Q4: { r: 80, g: 200, b: 150 }    // Verde-cyan
+        };
+
+        // Funciones helper para manipular colores RGB
+        function lightenColor(rgbString, percent) {
+            const match = rgbString.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+            if (!match) return rgbString;
+
+            const r = Math.min(255, parseInt(match[1]) + (255 - parseInt(match[1])) * (percent / 100));
+            const g = Math.min(255, parseInt(match[2]) + (255 - parseInt(match[2])) * (percent / 100));
+            const b = Math.min(255, parseInt(match[3]) + (255 - parseInt(match[3])) * (percent / 100));
+
+            return `rgb(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)})`;
+        }
+
+        function darkenColor(rgbString, percent) {
+            const match = rgbString.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+            if (!match) return rgbString;
+
+            const r = parseInt(match[1]) * (1 - percent / 100);
+            const g = parseInt(match[2]) * (1 - percent / 100);
+            const b = parseInt(match[3]) * (1 - percent / 100);
+
+            return `rgb(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)})`;
+        }
+
+        // Interpolación bilinear entre 4 colores basada en coordenadas (V, A)
+        function getEmotionColor(emotions) {
+            // Normalizar valencia y activación de [-1, 1] a [0, 1]
+            const v_norm = (valence + 1) / 2;  // 0 = negativo, 1 = positivo
+            const a_norm = (arousal + 1) / 2;  // 0 = bajo, 1 = alto
+
+            // Interpolación bilinear en el plano V-A
+            // Los 4 cuadrantes son las esquinas de un cuadrado unitario
+
+            // Interpolar en eje de activación (arriba-abajo)
+            // Top: entre Q2 (izq) y Q1 (der) - alta activación
+            const top_r = COLOR_QUADRANTS.Q2.r * (1 - v_norm) + COLOR_QUADRANTS.Q1.r * v_norm;
+            const top_g = COLOR_QUADRANTS.Q2.g * (1 - v_norm) + COLOR_QUADRANTS.Q1.g * v_norm;
+            const top_b = COLOR_QUADRANTS.Q2.b * (1 - v_norm) + COLOR_QUADRANTS.Q1.b * v_norm;
+
+            // Bottom: entre Q3 (izq) y Q4 (der) - baja activación
+            const bottom_r = COLOR_QUADRANTS.Q3.r * (1 - v_norm) + COLOR_QUADRANTS.Q4.r * v_norm;
+            const bottom_g = COLOR_QUADRANTS.Q3.g * (1 - v_norm) + COLOR_QUADRANTS.Q4.g * v_norm;
+            const bottom_b = COLOR_QUADRANTS.Q3.b * (1 - v_norm) + COLOR_QUADRANTS.Q4.b * v_norm;
+
+            // Interpolar entre top y bottom según nivel de activación
+            const r = bottom_r * (1 - a_norm) + top_r * a_norm;
+            const g = bottom_g * (1 - a_norm) + top_g * a_norm;
+            const b = bottom_b * (1 - a_norm) + top_b * a_norm;
+
+            // Añadir intensidad basada en la magnitud emocional (distancia al centro)
+            const magnitude = Math.sqrt(valence * valence + arousal * arousal);
+            const intensity = 0.6 + magnitude * 0.4;  // 0.6 a 1.0
+
+            const final_r = Math.floor(r * intensity);
+            const final_g = Math.floor(g * intensity);
+            const final_b = Math.floor(b * intensity);
+
+            return `rgb(${final_r}, ${final_g}, ${final_b})`;
+        }
+
+        // Derivar emociones individuales del modelo circumplejo
+        // Usa proyecciones en el círculo emocional
+        function deriveEmotions() {
+            // Normalizar a rango [0, 100] para UI
+            const v = valence;  // -1 a +1
+            const a = arousal;  // -1 a +1
+
+            // Felicidad: cuadrante I (valencia+, activación+)
+            emotions.happiness = Math.max(0, v * 50 + 50) * Math.max(0, a * 50 + 50) / 50;
+
+            // Tristeza: cuadrante III (valencia-, activación-)
+            emotions.sadness = Math.max(0, -v * 50 + 50) * Math.max(0, -a * 50 + 50) / 50;
+
+            // Molestia/Ira: cuadrante II (valencia-, activación+)
+            emotions.anger = Math.max(0, -v * 50 + 50) * Math.max(0, a * 50 + 50) / 50;
+
+            // Calma: cuadrante IV (valencia+, activación-)
+            emotions.calm = Math.max(0, v * 50 + 50) * Math.max(0, -a * 50 + 50) / 50;
+
+            // Energía: principalmente activación alta
+            emotions.energy = Math.max(0, a * 50 + 50);
+        }
+
+        // Actualizar osciladores usando ecuaciones diferenciales acopladas
+        // Sistema de masa-resorte con acoplamiento entre vecinos
+        function updateOscillators(dt) {
+            // Actualizar fase de respiración global
+            const breathFrequency = 0.5;  // Respiraciones por segundo
+            breathPhase += 2 * Math.PI * breathFrequency * dt;
+
+            // Parámetros del sistema modulados por emociones
+            const magnitude = Math.sqrt(valence * valence + arousal * arousal);
+
+            // Respiración global (expansión/contracción sinusoidal)
+            const breathAmplitude = 8.0 + magnitude * 4.0;  // Más emoción = respiración más pronunciada
+            const breathOffset = Math.sin(breathPhase) * breathAmplitude;
+
+            // Frecuencia angular (afectada por energía emocional)
+            const omega = 1.5 + emotions.energy * 0.01;  // Más energía = oscilación más rápida
+
+            // Amortiguamiento (afectado por calma)
+            const damping = 0.2 - emotions.calm * 0.001;  // Más calma = menos amortiguamiento
+
+            // Acoplamiento entre osciladores vecinos
+            const coupling = 0.4;
+
+            // Amplitud del ruido (afectada por magnitud emocional)
+            const noiseAmplitude = 1.0 + magnitude * 3.0;
+
+            // Fuerzas temporales (se calculan primero para todos los osciladores)
+            const forces = [];
+
+            for (let i = 0; i < NUM_OSCILLATORS; i++) {
+                // Target radius incluye respiración global
+                const targetRadius = BASE_RADIUS + breathOffset;
+
+                // Fuerza de restauración (oscilador armónico)
+                const restoreForce = -omega * omega * (oscillatorRadii[i] - targetRadius);
+
+                // Fuerza de amortiguamiento
+                const dampingForce = -damping * oscillatorVelocities[i];
+
+                // Fuerza de acoplamiento con vecinos (ondas viajeras)
+                const prevIdx = (i - 1 + NUM_OSCILLATORS) % NUM_OSCILLATORS;
+                const nextIdx = (i + 1) % NUM_OSCILLATORS;
+                const couplingForce = coupling * (
+                    (oscillatorRadii[prevIdx] - oscillatorRadii[i]) +
+                    (oscillatorRadii[nextIdx] - oscillatorRadii[i])
+                );
+
+                // Ondulación adicional (onda viajera alrededor del perímetro)
+                const wavePhase = breathPhase * 2 + (i / NUM_OSCILLATORS) * 2 * Math.PI;
+                const waveForce = Math.sin(wavePhase) * 2.5;  // Ondas más pronunciadas
+
+                // Ruido estocástico para movimiento orgánico
+                const noise = (Math.random() - 0.5) * noiseAmplitude;
+
+                // Fuerza total
+                forces[i] = restoreForce + dampingForce + couplingForce + waveForce + noise;
+            }
+
+            // Integración (método de Euler)
+            for (let i = 0; i < NUM_OSCILLATORS; i++) {
+                oscillatorVelocities[i] += forces[i] * dt;
+                oscillatorRadii[i] += oscillatorVelocities[i] * dt;
+
+                // Limitar oscilaciones extremas (rango amplio para respiración visible)
+                oscillatorRadii[i] = Math.max(20, Math.min(70, oscillatorRadii[i]));
+            }
+        }
+
+        // Generar forma del blob basada en osciladores y anger
+        // anger bajo → gelatina fluida (usa osciladores)
+        // anger alto → erizo con puntas (modo agresivo)
+        function getBlobShape(anger) {
+            const centerX = 50;
+            const centerY = 50;
+
+            // MODO HÍBRIDO: mezcla gelatina con puntas según anger
+            const spikeIntensity = Math.max(0, (anger - 20) / 80);  // 0 a 1
+            const gelatinIntensity = 1 - spikeIntensity;
+
+            // Número de puntas para modo erizo
+            const numSpikes = Math.floor(8 + spikeIntensity * 16);  // 8 a 24
+            const spikeHeight = spikeIntensity * 25;  // 0 a 25%
+
+            const points = [];
+
+            // Generar puntos interpolando entre osciladores
+            const pointsPerOscillator = 4;  // Más puntos = curvas más suaves
+
+            for (let i = 0; i < NUM_OSCILLATORS; i++) {
+                for (let j = 0; j < pointsPerOscillator; j++) {
+                    const t = j / pointsPerOscillator;
+
+                    // Índices para interpolación Catmull-Rom (4 puntos)
+                    const i0 = (i - 1 + NUM_OSCILLATORS) % NUM_OSCILLATORS;
+                    const i1 = i;
+                    const i2 = (i + 1) % NUM_OSCILLATORS;
+                    const i3 = (i + 2) % NUM_OSCILLATORS;
+
+                    // Interpolación cúbica Catmull-Rom para curvas suaves
+                    const r0 = oscillatorRadii[i0];
+                    const r1 = oscillatorRadii[i1];
+                    const r2 = oscillatorRadii[i2];
+                    const r3 = oscillatorRadii[i3];
+
+                    const t2 = t * t;
+                    const t3 = t2 * t;
+
+                    const baseRadius = 0.5 * (
+                        (2 * r1) +
+                        (-r0 + r2) * t +
+                        (2*r0 - 5*r1 + 4*r2 - r3) * t2 +
+                        (-r0 + 3*r1 - 3*r2 + r3) * t3
+                    );
+
+                    // Ángulo actual
+                    const totalIdx = i * pointsPerOscillator + j;
+                    const totalPoints = NUM_OSCILLATORS * pointsPerOscillator;
+                    const angle = (totalIdx * 2 * Math.PI) / totalPoints;
+
+                    // Agregar puntas si hay anger
+                    let radius = baseRadius;
+                    if (spikeIntensity > 0) {
+                        // Determinar si este punto es una punta
+                        const spikeAngle = (2 * Math.PI) / numSpikes;
+                        const nearestSpike = Math.round(angle / spikeAngle) * spikeAngle;
+                        const distanceToSpike = Math.abs(angle - nearestSpike);
+
+                        // Crear punta con perfil gaussiano
+                        const spikeProfile = Math.exp(-distanceToSpike * distanceToSpike * 20);
+                        radius += spikeHeight * spikeProfile * spikeIntensity;
+                    }
+
+                    // Convertir polar a cartesiano
+                    const x = centerX + radius * Math.cos(angle);
+                    const y = centerY + radius * Math.sin(angle);
+
+                    points.push(`${x.toFixed(2)}% ${y.toFixed(2)}%`);
+                }
+            }
+
+            return `polygon(${points.join(', ')})`;
+        }
+
+        // ============================================================================
+        // CAJA NEGRA: Actualizar sistema emocional completo
+        // ============================================================================
+        function updateEmotionalSystem(dt) {
+            // 1. Actualizar dimensiones emocionales (Modelo Circumplejo)
+            const valenceForce = -EMOTION_DECAY_RATE * valence;
+            const arousalForce = -EMOTION_DECAY_RATE * arousal;
+
+            const coupling_v_to_a = EMOTION_COUPLING * valence * Math.abs(arousal);
+            const coupling_a_to_v = -EMOTION_COUPLING * arousal * Math.abs(valence);
+
+            const magnitude = Math.sqrt(valence * valence + arousal * arousal);
+            const noise_v = (Math.random() - 0.5) * EMOTION_NOISE * magnitude;
+            const noise_a = (Math.random() - 0.5) * EMOTION_NOISE * magnitude;
+
+            valenceVelocity += (valenceForce + coupling_a_to_v + noise_v);
+            arousalVelocity += (arousalForce + coupling_v_to_a + noise_a);
+
+            valenceVelocity *= EMOTION_DAMPING;
+            arousalVelocity *= EMOTION_DAMPING;
+
+            valence += valenceVelocity * dt;
+            arousal += arousalVelocity * dt;
+
+            // Snap to zero para evitar oscilación infinita
+            if (Math.abs(valence) < 0.01 && Math.abs(valenceVelocity) < 0.001) {
+                valence = 0;
+                valenceVelocity = 0;
+            }
+            if (Math.abs(arousal) < 0.01 && Math.abs(arousalVelocity) < 0.001) {
+                arousal = 0;
+                arousalVelocity = 0;
+            }
+
+            // Mantener dentro del círculo unitario
+            if (magnitude > 1.0) {
+                valence /= magnitude;
+                arousal /= magnitude;
+                valenceVelocity *= 0.3;
+                arousalVelocity *= 0.3;
+            }
+
+            // 2. Derivar emociones del estado dimensional
+            deriveEmotions();
+
+            // 3. Actualizar osciladores de forma (gelatina)
+            updateOscillators(dt);
+
+            // 4. Actualizar interfaz visual
+            updateEmotionUI();
+        }
+
+        // Actualizar la interfaz de emociones
+        function updateEmotionUI() {
+            // 1. Actualizar dimensiones fundamentales (barras bipolares)
+            // Valencia: -1 a +1 → mostrar como barra de 0% a 100% desde el centro
+            const valencePercent = (valence + 1) * 50; // Convertir [-1,1] a [0,100]
+            const valenceBar = document.getElementById('valenceBar');
+            if (valence >= 0) {
+                // Positivo: barra va del centro hacia la derecha
+                valenceBar.style.left = '50%';
+                valenceBar.style.width = (valence * 50) + '%';
+            } else {
+                // Negativo: barra va del centro hacia la izquierda
+                valenceBar.style.left = ((1 + valence) * 50) + '%';
+                valenceBar.style.width = (-valence * 50) + '%';
+            }
+            document.getElementById('valenceValue').textContent = (valence >= 0 ? '+' : '') + valence.toFixed(2);
+
+            // Activación: igual que valencia
+            const arousalBar = document.getElementById('arousalBar');
+            if (arousal >= 0) {
+                arousalBar.style.left = '50%';
+                arousalBar.style.width = (arousal * 50) + '%';
+            } else {
+                arousalBar.style.left = ((1 + arousal) * 50) + '%';
+                arousalBar.style.width = (-arousal * 50) + '%';
+            }
+            document.getElementById('arousalValue').textContent = (arousal >= 0 ? '+' : '') + arousal.toFixed(2);
+
+            // 2. Actualizar punto en el círculo circumplejo
+            const circumplexPoint = document.getElementById('circumplexPoint');
+            // Convertir coordenadas [-1,1] a posición en el círculo [0%,100%]
+            // X: valencia (derecha = positivo)
+            // Y: arousal (arriba = alto, pero en CSS top=0 es arriba, así que invertir)
+            const pointX = (valence * 0.45 + 0.5) * 100; // 0.45 para mantener dentro del círculo
+            const pointY = (-arousal * 0.45 + 0.5) * 100; // Invertir Y para que arriba sea positivo
+            circumplexPoint.style.left = pointX + '%';
+            circumplexPoint.style.top = pointY + '%';
+
+            // 3. Actualizar emociones derivadas
+            document.getElementById('happinessValue').textContent = Math.floor(emotions.happiness);
+            document.getElementById('happinessBar').style.width = emotions.happiness + '%';
+
+            document.getElementById('sadnessValue').textContent = Math.floor(emotions.sadness);
+            document.getElementById('sadnessBar').style.width = emotions.sadness + '%';
+
+            document.getElementById('angerValue').textContent = Math.floor(emotions.anger);
+            document.getElementById('angerBar').style.width = emotions.anger + '%';
+
+            document.getElementById('calmValue').textContent = Math.floor(emotions.calm);
+            document.getElementById('calmBar').style.width = emotions.calm + '%';
+
+            document.getElementById('energyValue').textContent = Math.floor(emotions.energy);
+            document.getElementById('energyBar').style.width = emotions.energy + '%';
+
+            // 4. Actualizar color base de la esfera 3D
+            const color = getEmotionColor(emotions);
+
+            // Crear gradiente radial 3D con iluminación
+            const lightX = 30 + Math.sin(breathPhase * 0.5) * 10;
+            const lightY = 30 + Math.cos(breathPhase * 0.5) * 10;
+
+            blobCharacter.style.background = `
+                radial-gradient(circle at ${lightX}% ${lightY}%,
+                    ${lightenColor(color, 40)},
+                    ${color} 40%,
+                    ${darkenColor(color, 30)} 80%,
+                    ${darkenColor(color, 50)} 100%)
+            `;
+
+            // 6. Modular velocidad de rotación del agua basado en energía
+            const waterLayers = blobCharacter.querySelectorAll('.water-layer');
+            const rotationSpeed = 1 + (emotions.energy / 100) * 2;  // 1x a 3x velocidad
+            waterLayers.forEach((layer, index) => {
+                const baseDuration = [8, 12, 10][index];
+                const duration = baseDuration / rotationSpeed;
+                layer.style.animationDuration = `${duration}s`;
+            });
+
+            // 7. Aplicar respiración (escala pulsante)
+            const breathScale = 1.0 + Math.sin(breathPhase) * 0.06;  // ±6% escala
+            const currentTransform = blobCharacter.style.transform || '';
+            if (!currentTransform.includes('translate')) {
+                blobCharacter.style.transform = `scale(${breathScale})`;
+            }
+
+            // 8. Modular turbulencia (opacidad de capas) basado en anger
+            const turbulence = 0.2 + (emotions.anger / 100) * 0.4;  // 0.2 a 0.6
+            waterLayers.forEach((layer, index) => {
+                layer.style.opacity = turbulence * ([1.0, 0.7, 0.85][index]);
+            });
+        }
+
+        // Analizar sentimiento y aplicar impulsos a dimensiones fundamentales
+        // Basado en el Modelo Circumplejo de Russell
+        function analyzeSentiment(text) {
+            const lower = text.toLowerCase();
+
+            // Palabras que afectan VALENCIA (positivo/negativo)
+            const positiveWords = ['feliz', 'alegre', 'jeje', 'jaja', 'genial', 'bien', 'bueno',
+                                   'excelente', 'increíble', 'amor', 'gusto', 'divertido'];
+            const negativeWords = ['triste', 'mal', 'terrible', 'horrible', 'odio', 'pena',
+                                   'molesto', 'enojado', 'furioso', 'irritante', 'aburrido'];
+
+            // Palabras que afectan ACTIVACIÓN (alto/bajo)
+            const highArousalWords = ['!', '¡', 'wow', 'vamos', 'rápido', 'energía', 'activo',
+                                      'emocionado', 'intenso', 'fuerte', 'urgente', 'explosivo'];
+            const lowArousalWords = ['tranquilo', 'calma', 'paz', 'relax', 'sereno', 'eh', 'meh',
+                                     'lento', 'suave', 'cansado', 'dormido', 'aburrido'];
+
+            // Contar coincidencias
+            let positiveCount = positiveWords.filter(w => lower.includes(w)).length;
+            let negativeCount = negativeWords.filter(w => lower.includes(w)).length;
+            let highArousalCount = highArousalWords.filter(w => lower.includes(w)).length;
+            let lowArousalCount = lowArousalWords.filter(w => lower.includes(w)).length;
+
+            // Contar exclamaciones (alta activación)
+            highArousalCount += (text.match(/[!¡]/g) || []).length * 0.5;
+
+            // Calcular impulsos dimensionales
+            const IMPULSE_STRENGTH = 0.15;
+
+            // Valencia: positivo aumenta, negativo disminuye
+            const valenceDelta = (positiveCount - negativeCount) * IMPULSE_STRENGTH;
+            valenceVelocity += valenceDelta;
+
+            // Activación: alto aumenta, bajo disminuye
+            const arousalDelta = (highArousalCount - lowArousalCount) * IMPULSE_STRENGTH;
+            arousalVelocity += arousalDelta;
+
+            // Visualizar trigger si hay impulso significativo
+            const impulseMagnitude = Math.abs(valenceDelta) + Math.abs(arousalDelta);
+            if (impulseMagnitude > 0.05) {
+                // Flash visual en el punto del círculo
+                const point = document.getElementById('circumplexPoint');
+                point.classList.remove('impulse');
+                setTimeout(() => point.classList.add('impulse'), 10);
+
+                // Mostrar indicador de trigger
+                const indicator = document.getElementById('triggerIndicator');
+                let message = 'IMPULSO: ';
+                if (Math.abs(valenceDelta) > 0.05) {
+                    message += valenceDelta > 0 ? '↑Valencia+ ' : '↓Valencia- ';
+                }
+                if (Math.abs(arousalDelta) > 0.05) {
+                    message += arousalDelta > 0 ? '↑Activación+' : '↓Activación-';
+                }
+                indicator.textContent = message;
+                indicator.classList.add('active');
+
+                // Ocultar después de 2 segundos
+                setTimeout(() => {
+                    indicator.classList.remove('active');
+                }, 2000);
+            }
+        }
+
+        // Sistema de interacción: clicks en el blob
+        let lastAngerLevel = 0;  // Para detectar cambios en anger
+        let clickCount = 0;
+        let lastReactionTime = 0;
+
+        // Generar respuesta dinámica basada en el estado emocional
+        function generateEmotionalResponse() {
+            const anger = emotions.anger;
+            const calm = emotions.calm;
+            const energy = emotions.energy;
+
+            // Determinar nivel de molestia (no hardcodeado, basado en anger)
+            let responses = [];
+
+            if (anger < 20) {
+                // Apenas molesto (casual)
+                responses = [
+                    "eh... qué pasa compadre.",
+                    "*mira* ...qué necesitas?",
+                    "meh.",
+                    "...sí?"
+                ];
+            } else if (anger < 40) {
+                // Molestia moderada
+                responses = [
+                    "oye, estás siendo un poco insistente.",
+                    "eh... podrías parar?",
+                    "*suspiro* qué quieres ahora.",
+                    "kid, me estás molestando un poco."
+                ];
+            } else if (anger < 60) {
+                // Bastante molesto
+                responses = [
+                    "ok, AHORA sí me estás molestando.",
+                    "compadre... no me hagas enojar.",
+                    "en serio? *entrecierra los ojos*",
+                    "hey. para."
+                ];
+            } else if (anger < 80) {
+                // Muy molesto
+                responses = [
+                    "NO ME MOLESTES.",
+                    "kid, estás jugando con fuego.",
+                    "*huesos crujen* eh... cuidado.",
+                    "vas a tener un MAL TIEMPO."
+                ];
+            } else {
+                // FURIOSO
+                responses = [
+                    "YA BASTA.",
+                    "te lo advertí, compadre.",
+                    "*ojo brilla azul* ...",
+                    "quieres ver lo que pasa cuando alguien como yo tiene un mal día?",
+                    "get dunked on."
+                ];
+            }
+
+            // Añadir variación según energía
+            if (energy > 70 && anger > 50) {
+                // Alta energía + alta molestia = más agresivo
+                responses = responses.map(r => r.toUpperCase());
+            }
+
+            // Seleccionar respuesta aleatoria del nivel apropiado
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        // Agregar mensaje de Sans al chat (sin esperar respuesta del servidor)
+        function addSansReaction(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message gemini';
+
+            const label = document.createElement('div');
+            label.className = 'message-label';
+            label.textContent = '* Sans';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = processMarkdown(message);
+            contentDiv.style.borderColor = '#FF4500';  // Borde rojo cuando está molesto
+
+            messageDiv.appendChild(label);
+            messageDiv.appendChild(contentDiv);
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+
+            // Reproducir sonido
+            playTalkSound();
+        }
+
+        // Manejar clicks en el blob
+        blobCharacter.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Animación visual
+            blobCharacter.classList.remove('clicked');
+            setTimeout(() => blobCharacter.classList.add('clicked'), 10);
+
+            clickCount++;
+
+            // Aplicar impulsos DIMENSIONALES (no hardcodear emociones)
+            // Cada click empuja hacia: valencia negativa + alta activación = MOLESTIA
+            const CLICK_ANNOYANCE = 0.25;  // Fuerza del impulso
+
+            valenceVelocity -= CLICK_ANNOYANCE;   // Negativo (malo)
+            arousalVelocity += CLICK_ANNOYANCE;   // Alto (activado)
+
+            // Flash en el círculo circumplejo
+            const point = document.getElementById('circumplexPoint');
+            point.classList.remove('impulse');
+            setTimeout(() => point.classList.add('impulse'), 10);
+
+            // Mostrar trigger
+            const indicator = document.getElementById('triggerIndicator');
+            indicator.textContent = `CLICK #${clickCount}: ↓Valencia- ↑Activación+`;
+            indicator.classList.add('active');
+            setTimeout(() => indicator.classList.remove('active'), 1500);
+
+            // Reaccionar basándose en el nivel de anger (dinámico)
+            // No reaccionar a CADA click, sino cuando anger cruza umbrales
+            const currentTime = Date.now();
+            const timeSinceLastReaction = currentTime - lastReactionTime;
+
+            // Determinar si debe reaccionar (más frecuente cuando más molesto)
+            const reactionThreshold = Math.max(500, 3000 - emotions.anger * 25); // ms
+
+            if (timeSinceLastReaction > reactionThreshold || clickCount === 1) {
+                const message = generateEmotionalResponse();
+                addSansReaction(message);
+                lastReactionTime = currentTime;
+            }
+
+            // Si está MUY molesto (anger > 85), hacer que la esfera se mueva (esquiva)
+            if (emotions.anger > 85 && Math.random() > 0.3) {
+                const randomX = (Math.random() - 0.5) * 40;
+                const randomY = (Math.random() - 0.5) * 40;
+                const currentBreathScale = 1.0 + Math.sin(breathPhase) * 0.06;
+                blobCharacter.style.transform = `translate(${randomX}px, ${randomY}px) scale(${currentBreathScale})`;
+                setTimeout(() => {
+                    const newBreathScale = 1.0 + Math.sin(breathPhase) * 0.06;
+                    blobCharacter.style.transform = `scale(${newBreathScale})`;
+                }, 600);
+            }
+
+            // Si está EXTREMADAMENTE molesto (anger > 90), poner roja intensa y temblar
+            if (emotions.anger > 90) {
+                blobCharacter.style.boxShadow = `
+                    inset -25px -25px 40px rgba(0, 0, 0, 0.7),
+                    inset 10px 10px 20px rgba(255, 50, 50, 0.3),
+                    0 0 40px rgba(255, 0, 0, 0.6),
+                    0 10px 30px rgba(0, 0, 0, 0.5)
+                `;
+            } else {
+                blobCharacter.style.boxShadow = `
+                    inset -25px -25px 40px rgba(0, 0, 0, 0.5),
+                    inset 10px 10px 20px rgba(255, 255, 255, 0.1),
+                    0 10px 30px rgba(0, 0, 0, 0.4)
+                `;
+            }
+        });
+
+        // ============================================================================
+        // CONTROLES INTERACTIVOS
+        // ============================================================================
+
+        const valenceSlider = document.getElementById('valenceSlider');
+        const arousalSlider = document.getElementById('arousalSlider');
+        const angerSlider = document.getElementById('angerSlider');
+        const valenceDisplay = document.getElementById('valenceDisplay');
+        const arousalDisplay = document.getElementById('arousalDisplay');
+        const angerDisplay = document.getElementById('angerDisplay');
+        const colorPreview = document.getElementById('colorPreview');
+
+        // Actualizar desde sliders
+        valenceSlider.addEventListener('input', function() {
+            valence = this.value / 100;  // -1 a +1
+            valenceVelocity = 0;  // Resetear velocidad
+            updateControlPanelDisplay();
+        });
+
+        arousalSlider.addEventListener('input', function() {
+            arousal = this.value / 100;  // -1 a +1
+            arousalVelocity = 0;  // Resetear velocidad
+            updateControlPanelDisplay();
+        });
+
+        // Slider de molestia (control directo de anger)
+        // Anger está en Cuadrante II: valencia negativa + activación alta
+        angerSlider.addEventListener('input', function() {
+            const angerTarget = this.value;  // 0-100
+
+            // Calcular valencia y arousal para lograr el nivel de anger deseado
+            // Anger = Quadrant II del modelo circumplejo (valencia-, arousal+)
+            const intensity = angerTarget / 100;  // Normalizar a 0-1
+
+            valence = -0.85 * intensity;  // Cada vez más negativo
+            arousal = 0.90 * intensity;   // Cada vez más activado
+
+            valenceVelocity = 0;  // Resetear velocidades
+            arousalVelocity = 0;
+
+            updateControlPanelDisplay();
+        });
+
+        // Actualizar displays del panel de control
+        function updateControlPanelDisplay() {
+            // Actualizar valores numéricos
+            valenceDisplay.textContent = (valence >= 0 ? '+' : '') + valence.toFixed(2);
+            arousalDisplay.textContent = (arousal >= 0 ? '+' : '') + arousal.toFixed(2);
+
+            // Actualizar sliders si fueron modificados por el sistema
+            if (document.activeElement !== valenceSlider) {
+                valenceSlider.value = valence * 100;
+            }
+            if (document.activeElement !== arousalSlider) {
+                arousalSlider.value = arousal * 100;
+            }
+
+            // Recalcular emociones primero
+            deriveEmotions();
+
+            // Actualizar display de anger
+            angerDisplay.textContent = Math.floor(emotions.anger);
+
+            // Actualizar slider de anger si no está siendo usado activamente
+            if (document.activeElement !== angerSlider) {
+                angerSlider.value = Math.floor(emotions.anger);
+            }
+
+            // Actualizar preview de color
+            const color = getEmotionColor(emotions);
+            colorPreview.style.background = color;
+
+            // Actualizar mini displays
+            document.getElementById('miniHappiness').textContent = Math.floor(emotions.happiness);
+            document.getElementById('miniSadness').textContent = Math.floor(emotions.sadness);
+            document.getElementById('miniAnger').textContent = Math.floor(emotions.anger);
+            document.getElementById('miniCalm').textContent = Math.floor(emotions.calm);
+        }
+
+        // Presets emocionales
+        function setPreset(preset) {
+            switch(preset) {
+                case 'neutral':
+                    valence = 0;
+                    arousal = 0;
+                    break;
+                case 'happy':
+                    valence = 0.8;
+                    arousal = 0.7;
+                    break;
+                case 'sad':
+                    valence = -0.7;
+                    arousal = -0.6;
+                    break;
+                case 'angry':
+                    valence = -0.9;
+                    arousal = 0.9;
+                    break;
+            }
+            valenceVelocity = 0;
+            arousalVelocity = 0;
+            updateControlPanelDisplay();
+        }
+
+        // ============================================================================
+        // LOOP PRINCIPAL: Actualizar todo el sistema cada frame
+        // ============================================================================
+        setInterval(() => {
+            updateEmotionalSystem(0.05);  // dt = 50ms = 0.05s
+            updateControlPanelDisplay();  // Actualizar panel
+        }, 50);
+
+        // Función para procesar markdown básico a HTML
+        function processMarkdown(text) {
+            // Escapar HTML potencialmente peligroso primero
+            const escapeHtml = (str) => {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            };
+
+            let escaped = escapeHtml(text);
+
+            // Convertir **texto** a <strong>texto</strong> (negrita)
+            escaped = escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+            // Convertir *texto* a <em>texto</em> (cursiva/énfasis)
+            escaped = escaped.replace(/\*(.+?)\*/g, '<em style="color: #FFFF00;">$1</em>');
+
+            return escaped;
+        }
+
+        // Habilitar audio al primer clic del usuario
+        function enableAudio() {
+            if (!isAudioEnabled) {
+                audioContext.resume();
+                isAudioEnabled = true;
+                audioIndicator.textContent = '🔊 Audio activado';
+                audioIndicator.classList.add('enabled');
+                setTimeout(() => {
+                    audioIndicator.style.display = 'none';
+                }, 2000);
+            }
+        }
+
+        document.addEventListener('click', enableAudio, { once: true });
+        audioIndicator.addEventListener('click', enableAudio);
+
+        // Enviar mensaje al presionar Enter
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Focus en el input al cargar
+        messageInput.focus();
+
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'gemini'}`;
+
+            const label = document.createElement('div');
+            label.className = 'message-label';
+            label.textContent = isUser ? '* Tú' : '* Sans';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = processMarkdown(content);
+
+            messageDiv.appendChild(label);
+            messageDiv.appendChild(contentDiv);
+            chatArea.appendChild(messageDiv);
+
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const indicator = document.createElement('div');
+            indicator.className = 'message gemini';
+            indicator.id = 'typingIndicator';
+
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator active';
+            typingDiv.innerHTML = '<span></span><span></span><span></span>';
+
+            indicator.appendChild(typingDiv);
+            chatArea.appendChild(indicator);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+
+            if (!message) return;
+
+            // Agregar mensaje del usuario
+            addMessage(message, true);
+            // Analizar sentimiento del mensaje del usuario
+            analyzeSentiment(message);
+            messageInput.value = '';
+
+            // Deshabilitar input
+            sendButton.disabled = true;
+            messageInput.disabled = true;
+
+            // Crear contenedor para la respuesta con streaming
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message gemini';
+
+            const label = document.createElement('div');
+            label.className = 'message-label';
+            label.textContent = '* Sans';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.id = 'streamingContent';
+
+            messageDiv.appendChild(label);
+            messageDiv.appendChild(contentDiv);
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+
+            try {
+                const response = await fetch('/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        session_id: sessionId
+                    })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let fullText = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+
+                            if (data === '[DONE]') {
+                                contentDiv.id = '';
+                                // Analizar sentimiento del mensaje completo de Sans
+                                analyzeSentiment(fullText);
+                                break;
+                            } else if (data.startsWith('[ERROR]')) {
+                                contentDiv.className = 'message-content error';
+                                contentDiv.textContent = 'Error: ' + data.slice(7);
+                                break;
+                            } else {
+                                // Agregar el chunk al texto completo
+                                fullText += data;
+                                // Procesar markdown y mostrar
+                                contentDiv.innerHTML = processMarkdown(fullText);
+                                chatArea.scrollTop = chatArea.scrollHeight;
+
+                                // Reproducir sonido y animar indicador de voz
+                                playTalkSound();
+                                animateVoice();
+                            }
+                        }
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                const contentDiv = document.getElementById('streamingContent');
+                if (contentDiv) {
+                    contentDiv.className = 'message-content error';
+                    contentDiv.textContent = 'Error de conexión: ' + error.message;
+                    contentDiv.id = '';
+                }
+            } finally {
+                // Rehabilitar input
+                sendButton.disabled = false;
+                messageInput.disabled = false;
+                messageInput.focus();
+            }
+        }
+    </script>
+    </div>
+</body>
+</html>

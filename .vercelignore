@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.pyc
+.env
+.DS_Store
+*.log
+.gemini-clipboard/
+chat_gemini.py
+chat_gemini_gui.py
+chat_gemini_web.py
+*.sh
+test_streaming.py
